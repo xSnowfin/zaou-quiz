@@ -41,6 +41,7 @@
     .keyword {
       color: #228b22; font-weight: bold; font-size: 1.3em;
       margin: 10px 0; background: #e0ffe0; padding: 5px; border-radius: 10px;
+      display: inline-block;
     }
     #final-step input {
       padding: 10px; font-size: 1.2em; border-radius: 10px;
@@ -109,16 +110,29 @@
         if (k) keywords.push(k);
       });
 
-      container.innerHTML = `
-        <h2>集めたキーワードを組み合わせて答えを入力してね！</h2>
-        ${keywords.length > 0 ? keywords.map(k => `<div class="keyword">${k}</div>`).join("") : "<p>まだキーワードを集めていません。</p>"}
-        <div id="final-step">
-          <input type="text" id="final-answer" placeholder="答えを入力"><br>
-          <button onclick="checkFinalAnswer()">送信</button>
-          <p id="final-result"></p>
-          <div id="survey-link"></div>
-        </div>
-      `;
+      // ゴールページのHTML
+      let html = `<h2>集めたキーワードを組み合わせて答えを入力してね！</h2>`;
+      if (keywords.length > 0) {
+        html += keywords.map(k => `<div class="keyword">${k}</div>`).join("");
+      } else {
+        html += "<p>まだキーワードを集めていません。</p>";
+      }
+
+      if (keywords.length === Object.keys(quizzes).length) {
+        // 全部集まったときだけ最終解答を出す
+        html += `
+          <div id="final-step">
+            <input type="text" id="final-answer" placeholder="答えを入力"><br>
+            <button onclick="checkFinalAnswer()">送信</button>
+            <p id="final-result"></p>
+            <div id="survey-link"></div>
+          </div>
+        `;
+      } else {
+        html += `<p style="color:red; font-weight:bold;">⚠️ まだ全てのキーワードを集めていません！</p>`;
+      }
+
+      container.innerHTML = html;
     }
 
     function checkAnswer(selected, id) {
@@ -147,3 +161,4 @@
   </script>
 </body>
 </html>
+
