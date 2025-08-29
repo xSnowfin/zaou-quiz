@@ -30,9 +30,10 @@
     .options button {
       display: block; width: 100%; margin: 8px 0; padding: 12px;
       border: none; border-radius: 15px; background: #87cefa;
-      font-size: 1.1em; cursor: pointer; transition: background 0.3s;
+      font-size: 1.1em; cursor: pointer; transition: transform 0.1s, background 0.3s;
     }
     .options button:hover { background: #1e90ff; color: white; }
+    .options button:active { transform: scale(0.9); }
     .hint {
       font-size: 1em; color: #555; background: #f0f8ff; padding: 8px;
       margin-top: 10px; border-left: 4px solid #00bfff;
@@ -52,12 +53,28 @@
       border: none; border-radius: 15px; cursor: pointer; transition: background 0.3s;
     }
     #final-step button:hover { background: #ffaa00; }
-    #final-result { font-size: 1.3em; margin-top: 15px; color: #d2691e; font-weight: bold; }
+    #final-result { font-size: 1.3em; margin-top: 15px; font-weight: bold; }
+    #final-result.success {
+      animation: fadeIn 1s ease-in-out;
+      color: green;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.8); }
+      to { opacity: 1; transform: scale(1); }
+    }
   </style>
 </head>
 <body>
   <h1>蔵王ジャンプ台フェスティバル 謎解きクイズラリー！</h1>
   <div class="container" id="main-container"></div>
+
+  <!-- 効果音 -->
+  <audio id="correct-sound" src="sounds/correct.mp3" preload="auto"></audio>
+  <audio id="wrong-sound" src="sounds/wrong.mp3" preload="auto"></audio>
+  <audio id="goal-sound" src="sounds/goal.mp3" preload="auto"></audio>
+
+  <!-- 紙吹雪ライブラリ -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
   <script>
     // クイズデータ
@@ -86,6 +103,15 @@
 
     const container = document.getElementById("main-container");
 
+    // 音を鳴らす関数
+    function playSound(id) {
+      const sound = document.getElementById(id);
+      if (sound) {
+        sound.currentTime = 0;
+        sound.play();
+      }
+    }
+
     if (qid) {
       // クイズページ
       const quiz = quizzes[qid];
@@ -110,7 +136,6 @@
         if (k) keywords.push(k);
       });
 
-      // ゴールページのHTML
       let html = `<h2>集めたキーワードを組み合わせて答えを入力してね！</h2>`;
       if (keywords.length > 0) {
         html += keywords.map(k => `<div class="keyword">${k}</div>`).join("");
@@ -119,7 +144,6 @@
       }
 
       if (keywords.length === Object.keys(quizzes).length) {
-        // 全部集まったときだけ最終解答を出す
         html += `
           <div id="final-step">
             <input type="text" id="final-answer" placeholder="答えを入力"><br>
@@ -140,8 +164,11 @@
       if (selected === quiz.correct) {
         alert("⭕ 正解！ キーワードは『" + quiz.keyword + "』です");
         localStorage.setItem(`quiz${id}_cleared`, quiz.keyword);
+        playSound("correct-sound");
+        confetti(); // 紙吹雪
       } else {
         alert("❌ 残念！もう一度挑戦しよう！");
+        playSound("wrong-sound");
       }
     }
 
@@ -152,13 +179,16 @@
 
       if (ans === finalAnswer) {
         result.innerHTML = "🎉 クリアおめでとう！";
+        result.classList.add("success");
+        playSound("goal-sound");
+        confetti();
         survey.innerHTML = `<p><a href="https://docs.google.com/forms/" target="_blank">🎁 アンケートにご協力ください！</a></p>`;
       } else {
         result.innerHTML = "❌ 答えが違うみたいだ…キーワードを見直してみよう！";
         survey.innerHTML = "";
+        playSound("wrong-sound");
       }
     }
   </script>
 </body>
 </html>
-
