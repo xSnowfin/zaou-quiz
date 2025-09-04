@@ -139,7 +139,7 @@
         if (k) keywords.push(k);
       });
 
-      let html = `<h2>集めたキーワードを組み合わせて答えを入力してね！</h2>`;
+      let html = `<h2>問題が5つのキーワードをはめ込んで答えを導きだそう！</h2>`;
       if (keywords.length > 0) {
         html += keywords.map(k => `<div class="keyword">${k}</div>`).join("");
       } else {
@@ -147,7 +147,11 @@
       }
 
       if (keywords.length === Object.keys(quizzes).length) {
+        // ★ 全部そろったときだけヒントを表示
         html += `
+          <div class="hint" style="display:block; margin-top:15px; font-weight:bold;">
+            💡 ヒント: 蔵王ジャンプ台の別名は「アリオンテック蔵王〇〇〇〇〇」
+          </div>
           <div id="final-step">
             <input type="text" id="final-answer" placeholder="答えを入力"><br>
             <button onclick="checkFinalAnswer()">送信</button>
