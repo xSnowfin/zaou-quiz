@@ -1,3 +1,4 @@
+あなた:
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -10,6 +11,8 @@
       text-align: center;
       padding: 20px;
       margin: 0;
+
+      /* 背景画像をページ全体に */
       background: url("zaou.JPG") no-repeat center center fixed;
       background-size: cover;
     }
@@ -22,7 +25,7 @@
     .container {
       max-width: 600px;
       margin: auto;
-      background: rgba(255, 255, 255, 0.65);
+      background: rgba(255, 255, 255, 0.65); /* 白っぽいちょい透け */
       border-radius: 20px;
       padding: 20px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -59,13 +62,6 @@
       animation: fadeIn 1s ease-in-out;
       color: green;
     }
-    #retry-counter {
-      color: red;
-      font-weight: bold;
-      margin-top: 10px;
-      font-size: 1.2em;
-      display: none;
-    }
     @keyframes fadeIn {
       from { opacity: 0; transform: scale(0.8); }
       to { opacity: 1; transform: scale(1); }
@@ -74,9 +70,7 @@
 </head>
 <body>
   <h1>蔵王ジャンプ台フェスティバル 謎解きクイズラリー！</h1>
-  <div class="container" id="main-container">
-    <div id="retry-counter"></div>
-  </div>
+  <div class="container" id="main-container"></div>
 
   <!-- 効果音 -->
   <audio id="correct-sound" src="sounds/correct.mp3" preload="auto"></audio>
@@ -87,6 +81,7 @@
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
   <script>
+    // クイズデータ
     const quizzes = {
       '1': { question: "蔵王ジャンプ台が建設されたのはいつでしょうか?",
         options: ["1976年", "1978年", "1980年", "1982年"], correct: 1, keyword: "ツ",
@@ -106,12 +101,13 @@
     };
     const finalAnswer = "シャンツェ";
 
+    // URLパラメータ取得
     const params = new URLSearchParams(window.location.search);
     const qid = params.get("q");
 
     const container = document.getElementById("main-container");
-    const counterEl = document.getElementById("retry-counter");
 
+    // 音を鳴らす関数
     function playSound(id) {
       const sound = document.getElementById(id);
       if (sound) {
@@ -121,36 +117,39 @@
     }
 
     if (qid) {
+      // クイズページ
       const quiz = quizzes[qid];
       if (!quiz) {
         container.innerHTML = "<p>クイズが見つかりません。</p>";
       } else {
-        let html = `<div class="question">${quiz.question}</div>`;
-        html += `<div class="options">`;
+        let html = <div class="question">${quiz.question}</div>;
+        html += <div class="options">;
         quiz.options.forEach((opt, i) => {
-          html += `<button onclick="checkAnswer(${i}, '${qid}')">${opt}</button>`;
+          html += <button onclick="checkAnswer(${i}, '${qid}')">${opt}</button>;
         });
-        html += `</div>`;
-        html += `<button onclick="document.getElementById('hint').style.display='block'">💡 ヒントを見る</button>`;
-        html += `<div class="hint" id="hint">${quiz.hint}</div>`;
-        container.innerHTML += html;
+        html += </div>;
+        html += <button onclick="document.getElementById('hint').style.display='block'">💡 ヒントを見る</button>;
+        html += <div class="hint" id="hint">${quiz.hint}</div>;
+        container.innerHTML = html;
       }
     } else {
+      // ゴールページ
       let keywords = [];
       Object.keys(quizzes).forEach(id => {
-        const k = localStorage.getItem(`quiz${id}_cleared`);
+        const k = localStorage.getItem(quiz${id}_cleared);
         if (k) keywords.push(k);
       });
 
-      let html = `<h2>問題が5つのキーワードをはめ込んで答えを導きだそう！</h2>`;
+      let html = <h2>問題が5つのキーワードをはめ込んで答えを導きだそう！</h2>;
       if (keywords.length > 0) {
-        html += keywords.map(k => `<div class="keyword">${k}</div>`).join("");
+        html += keywords.map(k => <div class="keyword">${k}</div>).join("");
       } else {
         html += "<p>まだキーワードを集めていません。</p>";
       }
 
       if (keywords.length === Object.keys(quizzes).length) {
-        html += `
+        // ★ 全部そろったときだけヒントを表示
+        html += 
           <div class="hint" style="display:block; margin-top:15px; font-weight:bold;">
             💡 ヒント: 蔵王ジャンプ台の別名は「アリオンテック蔵王〇〇〇〇〇」
           </div>
@@ -160,48 +159,24 @@
             <p id="final-result"></p>
             <div id="survey-link"></div>
           </div>
-        `;
+        ;
       } else {
-        html += `<p style="color:red; font-weight:bold;">⚠️ まだ全てのキーワードを集めていません！</p>`;
+        html += <p style="color:red; font-weight:bold;">⚠️ まだ全てのキーワードを集めていません！</p>;
       }
 
-      container.innerHTML += html;
+      container.innerHTML = html;
     }
 
     function checkAnswer(selected, id) {
       const quiz = quizzes[id];
-      const buttons = document.querySelectorAll(".options button");
-
       if (selected === quiz.correct) {
         alert("⭕ 正解！ キーワードは『" + quiz.keyword + "』です");
-        localStorage.setItem(`quiz${id}_cleared`, quiz.keyword);
+        localStorage.setItem(quiz${id}_cleared, quiz.keyword);
         playSound("correct-sound");
-        confetti();
+        confetti(); // 紙吹雪
       } else {
+        alert("❌ 残念！もう一度挑戦しよう！");
         playSound("wrong-sound");
-
-        buttons.forEach(btn => {
-          btn.disabled = true;
-          btn.style.opacity = "0.5";
-        });
-
-        let count = 5;
-        counterEl.style.display = "block";
-        counterEl.textContent = `❌ 残念！ ${count}秒後に再挑戦できます`;
-
-        const interval = setInterval(() => {
-          count--;
-          if (count > 0) {
-            counterEl.textContent = `❌ 残念！ ${count}秒後に再挑戦できます`;
-          } else {
-            clearInterval(interval);
-            counterEl.style.display = "none";
-            buttons.forEach(btn => {
-              btn.disabled = false;
-              btn.style.opacity = "1";
-            });
-          }
-        }, 1000);
       }
     }
 
@@ -215,7 +190,7 @@
         result.classList.add("success");
         playSound("goal-sound");
         confetti();
-        survey.innerHTML = `<p><a href="https://forms.gle/mfHe6rbxjTjCdYtG6" target="_blank">🎁 アンケートにご協力ください！</a></p>`;
+        survey.innerHTML = <p><a href="https://forms.gle/mfHe6rbxjTjCdYtG6" target="_blank">🎁 アンケートにご協力ください！</a></p>;
       } else {
         result.innerHTML = "❌ 答えが違うみたいだ…キーワードを見直してみよう！";
         survey.innerHTML = "";
