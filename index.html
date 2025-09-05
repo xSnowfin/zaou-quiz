@@ -75,6 +75,7 @@
 <body>
   <h1>蔵王ジャンプ台フェスティバル 謎解きクイズラリー！</h1>
   <div class="container" id="main-container">
+    <!-- カウント用要素は最初からここに配置 -->
     <div id="retry-counter"></div>
   </div>
 
@@ -123,8 +124,9 @@
     if (qid) {
       const quiz = quizzes[qid];
       if (!quiz) {
-        container.innerHTML = "<p>クイズが見つかりません。</p>";
+        container.innerHTML += "<p>クイズが見つかりません。</p>";
       } else {
+        // クイズ内容を表示
         let html = `<div class="question">${quiz.question}</div>`;
         html += `<div class="options">`;
         quiz.options.forEach((opt, i) => {
@@ -133,9 +135,10 @@
         html += `</div>`;
         html += `<button onclick="document.getElementById('hint').style.display='block'">💡 ヒントを見る</button>`;
         html += `<div class="hint" id="hint">${quiz.hint}</div>`;
-        container.innerHTML += html;
+        container.innerHTML += html; // カウンターは消さず追加
       }
     } else {
+      // ゴールページ
       let keywords = [];
       Object.keys(quizzes).forEach(id => {
         const k = localStorage.getItem(`quiz${id}_cleared`);
