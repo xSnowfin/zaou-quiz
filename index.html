@@ -226,6 +226,9 @@
         playSound("wrong-sound");
       }
     }
+    // ページ読み込み時とハッシュ変更時にレンダリング
+    window.addEventListener("load", renderPage);
+    window.addEventListener("hashchange", renderPage);
   </script>
 </body>
 </html>
