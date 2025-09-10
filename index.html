@@ -106,12 +106,6 @@
     };
     const finalAnswer = "シャンツェ";
 
-    // --- #q1 専用 ---
-    let qid = null;
-    if (window.location.hash) {
-      qid = window.location.hash.replace("#q", ""); // "#q1" → "1"
-    }
-
     const container = document.getElementById("main-container");
     const counterEl = document.getElementById("retry-counter");
 
@@ -123,52 +117,63 @@
       }
     }
 
-    if (qid) {
-      const quiz = quizzes[qid];
-      if (!quiz) {
-        container.innerHTML += "<p>クイズが見つかりません。</p>";
+    // ページを描画する関数
+    function renderPage() {
+      container.innerHTML = '<div id="retry-counter"></div>'; // 初期化
+      const counterEl = document.getElementById("retry-counter");
+
+      let qid = null;
+      if (window.location.hash) {
+        qid = window.location.hash.replace("#q", "");
+      }
+
+      if (qid) {
+        const quiz = quizzes[qid];
+        if (!quiz) {
+          container.innerHTML += "<p>クイズが見つかりません。</p>";
+        } else {
+          let html = `<div class="question">${quiz.question}</div>`;
+          html += `<div class="options">`;
+          quiz.options.forEach((opt, i) => {
+            html += `<button onclick="checkAnswer(${i}, '${qid}')">${opt}</button>`;
+          });
+          html += `</div>`;
+          html += `<button onclick="document.getElementById('hint').style.display='block'">💡 ヒントを見る</button>`;
+          html += `<div class="hint" id="hint">${quiz.hint}</div>`;
+          container.innerHTML += html;
+        }
       } else {
-        let html = `<div class="question">${quiz.question}</div>`;
-        html += `<div class="options">`;
-        quiz.options.forEach((opt, i) => {
-          html += `<button onclick="checkAnswer(${i}, '${qid}')">${opt}</button>`;
+        let keywords = [];
+        Object.keys(quizzes).forEach(id => {
+          const k = localStorage.getItem(`quiz${id}_cleared`);
+          if (k) keywords.push(k);
         });
-        html += `</div>`;
-        html += `<button onclick="document.getElementById('hint').style.display='block'">💡 ヒントを見る</button>`;
-        html += `<div class="hint" id="hint">${quiz.hint}</div>`;
+
+        let html = `<h2>問題が5つのキーワードをはめ込んで答えを導きだそう！</h2>`;
+        if (keywords.length > 0) {
+          html += keywords.map(k => `<div class="keyword">${k}</div>`).join("");
+        } else {
+          html += "<p>まだキーワードを集めていません。</p>";
+        }
+
+        if (keywords.length === Object.keys(quizzes).length) {
+          html += `
+            <div class="hint" style="display:block; margin-top:15px; font-weight:bold;">
+              💡 ヒント: 蔵王ジャンプ台の別名は「アリオンテック蔵王〇〇〇〇〇」
+            </div>
+            <div id="final-step">
+              <input type="text" id="final-answer" placeholder="答えを入力"><br>
+              <button onclick="checkFinalAnswer()">送信</button>
+              <p id="final-result"></p>
+              <div id="survey-link"></div>
+            </div>
+          `;
+        } else {
+          html += `<p style="color:red; font-weight:bold;">⚠️ まだ全てのキーワードを集めていません！</p>`;
+        }
+
         container.innerHTML += html;
       }
-    } else {
-      let keywords = [];
-      Object.keys(quizzes).forEach(id => {
-        const k = localStorage.getItem(`quiz${id}_cleared`);
-        if (k) keywords.push(k);
-      });
-
-      let html = `<h2>問題が5つのキーワードをはめ込んで答えを導きだそう！</h2>`;
-      if (keywords.length > 0) {
-        html += keywords.map(k => `<div class="keyword">${k}</div>`).join("");
-      } else {
-        html += "<p>まだキーワードを集めていません。</p>";
-      }
-
-      if (keywords.length === Object.keys(quizzes).length) {
-        html += `
-          <div class="hint" style="display:block; margin-top:15px; font-weight:bold;">
-            💡 ヒント: 蔵王ジャンプ台の別名は「アリオンテック蔵王〇〇〇〇〇」
-          </div>
-          <div id="final-step">
-            <input type="text" id="final-answer" placeholder="答えを入力"><br>
-            <button onclick="checkFinalAnswer()">送信</button>
-            <p id="final-result"></p>
-            <div id="survey-link"></div>
-          </div>
-        `;
-      } else {
-        html += `<p style="color:red; font-weight:bold;">⚠️ まだ全てのキーワードを集めていません！</p>`;
-      }
-
-      container.innerHTML += html;
     }
 
     function checkAnswer(selected, id) {
@@ -226,6 +231,7 @@
         playSound("wrong-sound");
       }
     }
+
     // ページ読み込み時とハッシュ変更時にレンダリング
     window.addEventListener("load", renderPage);
     window.addEventListener("hashchange", renderPage);
