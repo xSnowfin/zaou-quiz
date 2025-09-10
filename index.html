@@ -41,9 +41,20 @@
       border-radius: 10px; display: none;
     }
     .keyword {
-      color: #228b22; font-weight: bold; font-size: 1.3em;
-      margin: 10px 0; background: #e0ffe0; padding: 5px; border-radius: 10px;
+      color: #228b22;
+      font-weight: bold;
+      font-size: 1.8em;
+      margin: 20px 0;
+      background: #e0ffe0;
+      padding: 15px 20px;
+      border-radius: 10px;
+      display: flex;
+      justify-content: center;
+      flex-wrap: nowrap;
+    }
+    .keyword .char {
       display: inline-block;
+      margin: 0 6px; /* ← ちょっとだけ間隔 */
     }
     #final-step input {
       padding: 10px; font-size: 1.2em; border-radius: 10px;
@@ -151,7 +162,12 @@
 
         let html = `<h2>問題が5つのキーワードをはめ込んで答えを導きだそう！</h2>`;
         if (keywords.length > 0) {
-          html += keywords.map(k => `<div class="keyword">${k}</div>`).join("");
+          // 集めたものだけを順にバラ文字表示
+          html += `<div class="keyword">` +
+            keywords.map(k =>
+              k.split("").map(ch => `<span class="char">${ch}</span>`).join("")
+            ).join("") +
+            `</div>`;
         } else {
           html += "<p>まだキーワードを集めていません。</p>";
         }
