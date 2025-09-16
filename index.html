@@ -83,25 +83,23 @@
     }
     /* 追加: 画面下部に表示するキーワードボックス（最終問題と同じ見た目） */
 #collected-keywords-bottom {
-  display: inline-flex;          /* 👈 文字の幅に合わせて伸縮 */
-  justify-content: center;
-  flex-wrap: nowrap;
- 
-  margin-top:20px;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: 45px;
-  z-index: 1200;
-  display: none;           /* キーワードがあるときだけ表示 */
-  max-width: 92%;
-  padding: 8px 12px;
-  background: rgba(255,255,255,0.92);
-  border-radius: 12px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
-  text-align: center;
-  display: table;                
+  margin-top: 20px;              /* ヒントボタンとの距離 */
+  font-size: 1.4em;
+  font-weight: bold;
+  color: #228b22;
+
+  display: inline-flex;          /* 幅を中身に合わせる */
+  justify-content: center;       /* 中身の文字を中央揃え */
+  background: #e0ffe0;
+  padding: 10px 15px;
+  border-radius: 10px;
+
+  /* 中央寄せのための設定 */
   margin-left: auto;
   margin-right: auto;
+}
+#collected-keywords-bottom .char {
+  margin: 0 6px;                 /* 文字の間隔 */
 }
 /* 内部の .keyword は既存スタイルを使うので基本そのまま。
    ただしボックス内の余白や影は抑える */
