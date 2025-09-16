@@ -221,6 +221,11 @@
 
         container.innerHTML += html;
       }
+       if (qid) {
+        updateCollectedKeywordsBottom(true);   // クイズ画面のときは表示
+      } else {
+        updateCollectedKeywordsBottom(false);  // 最終問題ページのときは非表示
+      }
     }
 
     function checkAnswer(selected, id) {
@@ -304,9 +309,15 @@ function renderCollectedKeywordsHTML_forBottom() {
     `</div>`;
 }
 
-function updateCollectedKeywordsBottom() {
+function updateCollectedKeywordsBottom(show = true) {
   const el = document.getElementById('collected-keywords-bottom');
   if (!el) return;
+
+  if (!show) {
+    el.style.display = 'none';   // 非表示にする
+    return;
+  }
+
   const html = renderCollectedKeywordsHTML_forBottom();
   if (html) {
     el.innerHTML = html;
@@ -316,6 +327,7 @@ function updateCollectedKeywordsBottom() {
     el.style.display = 'none';
   }
 }
+ 
 
 // 初期表示とハッシュ変更時に更新（レンダリング後に呼ばれるので安全）
 window.addEventListener('load', updateCollectedKeywordsBottom);
