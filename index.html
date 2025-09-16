@@ -81,6 +81,32 @@
       from { opacity: 0; transform: scale(0.8); }
       to { opacity: 1; transform: scale(1); }
     }
+    /* 追加: 画面下部に表示するキーワードボックス（最終問題と同じ見た目） */
+#collected-keywords-bottom {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 12px;
+  z-index: 1200;
+  display: none;           /* キーワードがあるときだけ表示 */
+  max-width: 92%;
+  padding: 8px 12px;
+  background: rgba(255,255,255,0.92);
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+  text-align: center;
+}
+/* 内部の .keyword は既存スタイルを使うので基本そのまま。
+   ただしボックス内の余白や影は抑える */
+#collected-keywords-bottom .keyword {
+  margin: 0;
+  background: transparent;
+  padding: 0;
+  box-shadow: none;
+}
+/* .char の間隔は既存スタイルを使うが必要なら上書き */
+#collected-keywords-bottom .char { margin: 0 6px; font-size: 1.4em; }
+
   </style>
 </head>
 <body>
@@ -201,6 +227,8 @@
         localStorage.setItem(`quiz${id}_cleared`, quiz.keyword);
         playSound("correct-sound");
         confetti();
+        // ここを追加（正解したら即座に下部表示を更新）
+      updateCollectedKeywordsBottom();
       } else {
         alert("❌ 残念！5秒後にもう一度挑戦しよう！"); 
         playSound("wrong-sound");
@@ -251,6 +279,46 @@
     // ページ読み込み時とハッシュ変更時にレンダリング
     window.addEventListener("load", renderPage);
     window.addEventListener("hashchange", renderPage);
+
+    // --- 追加する JS: collected keywords の取得＆ボトム更新 ---
+function getCollectedKeywordsArray() {
+  const arr = [];
+  Object.keys(quizzes).forEach(id => {
+    const k = localStorage.getItem(`quiz${id}_cleared`);
+    if (k) arr.push(k);
+  });
+  return arr; // 例: ["ツ", "ャ"]
+}
+
+function renderCollectedKeywordsHTML_forBottom() {
+  const arr = getCollectedKeywordsArray();
+  if (arr.length === 0) return '';
+  // 各キーワードを文字ごとに <span class="char"> にして結合（最終問題と同じ見た目）
+  return `<div class="keyword">` +
+    arr.map(k => k.split('').map(ch => `<span class="char">${ch}</span>`).join('')).join('') +
+    `</div>`;
+}
+
+function updateCollectedKeywordsBottom() {
+  const el = document.getElementById('collected-keywords-bottom');
+  if (!el) return;
+  const html = renderCollectedKeywordsHTML_forBottom();
+  if (html) {
+    el.innerHTML = html;
+    el.style.display = 'block';
+  } else {
+    el.innerHTML = '';
+    el.style.display = 'none';
+  }
+}
+
+// 初期表示とハッシュ変更時に更新（レンダリング後に呼ばれるので安全）
+window.addEventListener('load', updateCollectedKeywordsBottom);
+window.addEventListener('hashchange', updateCollectedKeywordsBottom);
+
   </script>
+  <!-- 追加: 画面下部に獲得キーワードを出す領域 -->
+<div id="collected-keywords-bottom" aria-live="polite"></div>
+
 </body>
 </html>
