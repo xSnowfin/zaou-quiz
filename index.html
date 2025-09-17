@@ -111,6 +111,18 @@
 /* .char の間隔は既存スタイルを使うが必要なら上書き */
 #collected-keywords-bottom .char { margin: 0 6px; font-size: 1.4em; display: inline-block; }
 
+ .next-button {
+  display: inline-block;
+  background: linear-gradient(135deg, #ffcc00, #ffaa00);
+  color: #fff;
+  font-size: 1.3em;
+  font-weight: bold;
+  text-decoration: none;
+  padding: 14px 28px;    /* スマホでもタップしやすい */
+  border-radius: 30px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
   </style>
 </head>
 <body>
@@ -272,13 +284,17 @@
       const result = document.getElementById("final-result");
       const survey = document.getElementById("survey-link");
 
-      if (ans === finalAnswer) {
-        result.innerHTML = "🎉 クリアおめでとう！";
-        result.classList.add("success");
-        playSound("goal-sound");
-        confetti();
-        survey.innerHTML = `<p><a href="https://forms.gle/mfHe6rbxjTjCdYtG6" target="_blank">次へ</a></p>`;
-      } else {
+     if (ans === finalAnswer) {
+  result.innerHTML = "🎉 クリアおめでとう！";
+  result.classList.add("success");
+  playSound("goal-sound");
+  confetti();
+  survey.innerHTML = `
+    <p>
+      <a href="https://forms.gle/mfHe6rbxjTjCdYtG6" target="_blank" class="next-button">次へ ▶</a>
+    </p>
+  `;
+}else {
         result.innerHTML = "❌ 答えが違うみたいだ…キーワードを見直してみよう！";
         survey.innerHTML = "";
         playSound("wrong-sound");
