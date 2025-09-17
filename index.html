@@ -54,7 +54,7 @@
     }
     .keyword .char {
       display: inline-block;
-      margin: 0 6px;
+      margin: 0 6px; /* ← ちょっとだけ間隔 */
     }
     #final-step input {
       padding: 10px; font-size: 1.2em; border-radius: 10px;
@@ -81,30 +81,36 @@
       from { opacity: 0; transform: scale(0.8); }
       to { opacity: 1; transform: scale(1); }
     }
-    /* 画面下部のキーワードボックス */
-    #collected-keywords-bottom {
-      margin-top: 20px;
-      font-size: 1.4em;
-      font-weight: bold;
-      color: #228b22;
-      display: inline-flex;
-      justify-content: center;
-      background: #e0ffe0;
-      padding: 6px 11px;
-      border-radius: 10px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-    #collected-keywords-bottom .char {
-      margin: 0 6px;
-    }
-    #collected-keywords-bottom .keyword {
-      margin: 0;
-      background: transparent;
-      padding: 0;
-      box-shadow: none;
-    }
-    #collected-keywords-bottom .char { margin: 0 6px; font-size: 1.4em; display: inline-block; }
+    /* 追加: 画面下部に表示するキーワードボックス（最終問題と同じ見た目） */
+#collected-keywords-bottom {
+  margin-top: 20px;
+  font-size: 1.4em;
+  font-weight: bold;
+  color: #228b22;
+
+  display: inline-block;     /* ← inline-flex → inline-block に変更 */
+  background: #e0ffe0;
+  padding: 6px 11px;
+  border-radius: 10px;
+
+  margin-left: auto;
+  margin-right: auto;        /* 中央寄せ */
+}
+
+#collected-keywords-bottom .char {
+  margin: 0 6px;                 /* 文字の間隔 */
+}
+/* 内部の .keyword は既存スタイルを使うので基本そのまま。
+   ただしボックス内の余白や影は抑える */
+#collected-keywords-bottom .keyword {
+  margin: 0;
+  background: transparent;
+  padding: 0;
+  box-shadow: none;
+}
+/* .char の間隔は既存スタイルを使うが必要なら上書き */
+#collected-keywords-bottom .char { margin: 0 6px; font-size: 1.4em; display: inline-block; }
+
   </style>
 </head>
 <body>
@@ -152,8 +158,9 @@
       }
     }
 
+    // ページを描画する関数
     function renderPage() {
-      container.innerHTML = '<div id="retry-counter"></div>';
+      container.innerHTML = '<div id="retry-counter"></div>'; // 初期化
       const counterEl = document.getElementById("retry-counter");
 
       let qid = null;
@@ -185,6 +192,7 @@
 
         let html = `<h2>問題が5つのキーワードをはめ込んで答えを導きだそう！</h2>`;
         if (keywords.length > 0) {
+          // 集めたものだけを順にバラ文字表示
           html += `<div class="keyword">` +
             keywords.map(k =>
               k.split("").map(ch => `<span class="char">${ch}</span>`).join("")
@@ -212,15 +220,10 @@
 
         container.innerHTML += html;
       }
-
-      // --- ここを修正 ---
-      let keywords = getCollectedKeywordsArray();
-      if (qid) {
-        updateCollectedKeywordsBottom(true);
-      } else if (keywords.length === Object.keys(quizzes).length) {
-        updateCollectedKeywordsBottom(false); // 最終問題ページ
+       if (qid) {
+        updateCollectedKeywordsBottom(true);   // クイズ画面のときは表示
       } else {
-        updateCollectedKeywordsBottom(true);  // 集め途中
+        updateCollectedKeywordsBottom(false);  // 最終問題ページのときは非表示
       }
     }
 
@@ -233,9 +236,10 @@
         localStorage.setItem(`quiz${id}_cleared`, quiz.keyword);
         playSound("correct-sound");
         confetti();
-        updateCollectedKeywordsBottom();
+        // ここを追加（正解したら即座に下部表示を更新）
+      updateCollectedKeywordsBottom();
       } else {
-        alert("❌ 残念！5秒後にもう一度挑戦しよう！");
+        alert("❌ 残念！5秒後にもう一度挑戦しよう！"); 
         playSound("wrong-sound");
 
         buttons.forEach(btn => {
@@ -281,46 +285,52 @@
       }
     }
 
+    // ページ読み込み時とハッシュ変更時にレンダリング
     window.addEventListener("load", renderPage);
     window.addEventListener("hashchange", renderPage);
 
-    function getCollectedKeywordsArray() {
-      const arr = [];
-      Object.keys(quizzes).forEach(id => {
-        const k = localStorage.getItem(`quiz${id}_cleared`);
-        if (k) arr.push(k);
-      });
-      return arr;
-    }
+    // --- 追加する JS: collected keywords の取得＆ボトム更新 ---
+function getCollectedKeywordsArray() {
+  const arr = [];
+  Object.keys(quizzes).forEach(id => {
+    const k = localStorage.getItem(`quiz${id}_cleared`);
+    if (k) arr.push(k);
+  });
+  return arr; // 例: ["ツ", "ャ"]
+}
 
-    function renderCollectedKeywordsHTML_forBottom() {
-      const arr = getCollectedKeywordsArray();
-      if (arr.length === 0) return '';
-      return `<div class="keyword">` +
-        arr.map(k => k.split('').map(ch => `<span class="char">${ch}</span>`).join('')).join('') +
-        `</div>`;
-    }
+function renderCollectedKeywordsHTML_forBottom() {
+  const arr = getCollectedKeywordsArray();
+  if (arr.length === 0) return '';
+  // 各キーワードを文字ごとに <span class="char"> にして結合（最終問題と同じ見た目）
+  return `<div class="keyword">` +
+    arr.map(k => k.split('').map(ch => `<span class="char">${ch}</span>`).join('')).join('') +
+    `</div>`;
+}
 
-    function updateCollectedKeywordsBottom(show = true) {
-      const el = document.getElementById('collected-keywords-bottom');
-      if (!el) return;
+function updateCollectedKeywordsBottom(show = true) {
+  const el = document.getElementById('collected-keywords-bottom');
+  if (!el) return;
 
-      if (!show) {
-        el.style.display = 'none';
-        return;
-      }
+  if (!show) {
+    el.style.display = 'none';   // 非表示にする
+    return;
+  }
 
-      const html = renderCollectedKeywordsHTML_forBottom();
-      if (html) {
-        el.innerHTML = html;
-        el.style.display = 'block';
-      } else {
-        el.innerHTML = '';
-        el.style.display = 'none';
-      }
-    }
+  const html = renderCollectedKeywordsHTML_forBottom();
+  if (html) {
+    el.innerHTML = html;
+    el.style.display = 'block';
+  } else {
+    el.innerHTML = '';
+    el.style.display = 'none';
+  }
+}
+ 
+
+
   </script>
-
-  <div id="collected-keywords-bottom" aria-live="polite"></div>
+  <!-- 追加: 画面下部に獲得キーワードを出す領域 -->
+<div id="collected-keywords-bottom" aria-live="polite"></div>
 </body>
 </html>
