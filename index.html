@@ -8,288 +8,345 @@
     body {
       font-family: 'Comic Sans MS', 'Arial', sans-serif;
       text-align: center;
+      padding: 12px;
+      margin: 0;
+      background: url("zaou.JPG") no-repeat center center fixed;
+      background-size: cover;
+    }
+    h1 {
+      color: #ff6600;
+      text-shadow: 2px 2px #fff;
+      font-size: 2.2em;
+      margin-bottom: 20px;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: rgba(255, 255, 255, 0.65);
+      border-radius: 20px;
       padding: 20px;
-      background: #f0f8ff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     }
-    .hidden { display: none; }
-    .quiz-container {
-      margin: 20px auto;
-      padding: 20px;
-      max-width: 500px;
-      border: 2px solid #333;
-      border-radius: 15px;
-      background: #fff;
-      box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+    .question { font-size: 1.3em; margin: 20px 0; color: #333; }
+    .options button {
+      display: block; width: 100%; margin: 8px 0; padding: 12px;
+      border: none; border-radius: 15px; background: #87cefa;
+      font-size: 1.1em; cursor: pointer; transition: transform 0.1s, background 0.3s;
     }
-    button {
-      margin: 8px;
-      padding: 10px 20px;
-      font-size: 1em;
-      border-radius: 10px;
-      border: none;
-      cursor: pointer;
-      background: #87ceeb;
-    }
-    button:disabled { background: #ccc; cursor: not-allowed; }
-
-    /* キーワード表示（最終ページ用） */
-    #collected-keywords {
-      margin-top: 20px;
-      font-size: 1.4em;
-      font-weight: bold;
-      color: #228b22;
+    .options button:hover { background: #1e90ff; color: white; }
+    .options button:active { transform: scale(0.9); }
+    .hint {
+      font-size: 1em; color: #555; background: #f0f8ff; padding: 8px;
+      margin-top: 10px; border-left: 4px solid #00bfff;
+      border-radius: 10px; display: none;
     }
     .keyword {
-      display: inline-block;
-      margin: 5px;
-      padding: 8px 12px;
-      background: #e0ffe0;
-      border-radius: 8px;
-      box-shadow: 1px 1px 4px rgba(0,0,0,0.1);
-    }
-    .char {
-      display: inline-block;
-      margin: 0 3px;
-      font-size: 1.5em;
-    }
-
-    /* 画面下部のキーワードボックス */
-    #collected-keywords-bottom {
-      margin-top: 20px;
-      font-size: 1.2em;
-      font-weight: bold;
       color: #228b22;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      background: #e0ffe0;
-      padding: 10px;
-      border-radius: 12px;
-      margin-left: auto;
-      margin-right: auto;
-      max-width: 90%;
-      box-sizing: border-box;
-    }
-    #collected-keywords-bottom .label {
-      font-size: 0.9em;
-      color: #555;
-      margin-bottom: 6px;
-    }
-    #collected-keywords-bottom .keyword {
-      margin: 0;
-      background: transparent;
-      padding: 0;
-      box-shadow: none;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-    #collected-keywords-bottom .char {
-      margin: 0 4px;
-      font-size: 1.4em;
-      display: inline-block;
-    }
-
-    /* 正解・不正解メッセージ */
-    #keyword-message {
-      margin-top: 15px;
-      font-size: 1.3em;
       font-weight: bold;
-      display: none;
-      padding: 10px;
-      border-radius: 10px;
-      animation: fadeIn 0.6s ease-in-out;
-      text-align: center;
-    }
-    #keyword-message.success {
-      color: green;
+      font-size: 1.8em;
+      margin: 20px 0;
       background: #e0ffe0;
+      padding: 15px 20px;
+      border-radius: 10px;
+      display: flex;
+      justify-content: center;
+      flex-wrap: nowrap;
     }
-    #keyword-message.fail {
+    .keyword .char {
+      display: inline-block;
+      margin: 0 6px; /* ← ちょっとだけ間隔 */
+    }
+    #final-step input {
+      padding: 10px; font-size: 1.2em; border-radius: 10px;
+      border: 2px solid #aaa; margin: 10px 0; width: 80%; max-width: 300px;
+    }
+    #final-step button {
+      background: #ffcc00; padding: 10px 20px; font-size: 1.2em;
+      border: none; border-radius: 15px; cursor: pointer; transition: background 0.3s;
+    }
+    #final-step button:hover { background: #ffaa00; }
+    #final-result { font-size: 1.3em; margin-top: 15px; font-weight: bold; }
+    #final-result.success {
+      animation: fadeIn 1s ease-in-out;
+      color: green;
+    }
+    #retry-counter {
       color: red;
-      background: #ffe0e0;
+      font-weight: bold;
+      margin-top: 10px;
+      font-size: 1.2em;
+      display: none;
     }
-
     @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
+      from { opacity: 0; transform: scale(0.8); }
+      to { opacity: 1; transform: scale(1); }
     }
+    /* 追加: 画面下部に表示するキーワードボックス（最終問題と同じ見た目） */
+#collected-keywords-bottom {
+  margin: 20px auto 0 auto;   /* 上下余白 + 中央寄せ */
+  font-size: 1.4em;
+  font-weight: bold;
+  color: #228b22;
+
+  display: inline-block;      
+  background: #e0ffe0;
+  padding: 6px 12px;
+  border-radius: 10px;
+
+  max-width: 90%;             /* ← スマホで横幅はみ出さないよう制限 */
+  box-sizing: border-box;     /* ← パディング込みでmax-width適用 */
+}
+
+#collected-keywords-bottom .char {
+  margin: 0 6px;                 /* 文字の間隔 */
+}
+/* 内部の .keyword は既存スタイルを使うので基本そのまま。
+   ただしボックス内の余白や影は抑える */
+#collected-keywords-bottom .keyword {
+  margin: 0;
+  background: transparent;
+  padding: 0;
+  box-shadow: none;
+}
+/* .char の間隔は既存スタイルを使うが必要なら上書き */
+#collected-keywords-bottom .char { margin: 0 6px; font-size: 1.4em; display: inline-block; }
+
+ .next-button {
+  display: inline-block;
+  background: linear-gradient(135deg, #ffcc00, #ffaa00);
+  color: #fff;
+  font-size: 1.3em;
+  font-weight: bold;
+  text-decoration: none;
+  padding: 14px 28px;    /* スマホでもタップしやすい */
+  border-radius: 30px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
   </style>
 </head>
 <body>
   <h1>蔵王ジャンプ台フェスティバル 謎解きクイズラリー！</h1>
+  <div class="container" id="main-container">
+    <div id="retry-counter"></div>
+  </div>
 
-  <div id="content"></div>
-  <div id="collected-keywords-bottom"></div>
+  <!-- 効果音 -->
+  <audio id="correct-sound" src="sounds/correct.mp3" preload="auto"></audio>
+  <audio id="wrong-sound" src="sounds/wrong.mp3" preload="auto"></audio>
+  <audio id="goal-sound" src="sounds/goal.mp3" preload="auto"></audio>
 
-  <audio id="correct-sound" src="sounds/correct.mp3"></audio>
-  <audio id="wrong-sound" src="sounds/wrong.mp3"></audio>
+  <!-- 紙吹雪ライブラリ -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
   <script>
     const quizzes = {
-      q1: { question: "日本で一番高い山は？", options: ["富士山", "北岳", "穂高岳"], correct: 0, keyword: "ツ" },
-      q2: { question: "3.14で有名な数学定数は？", options: ["オイラー数", "円周率", "黄金比"], correct: 1, keyword: "リ" },
-      q3: { question: "犬は英語で？", options: ["Dog", "Cat", "Bird"], correct: 0, keyword: "ー" },
-      q4: { question: "信号で進めの色は？", options: ["赤", "青", "黄"], correct: 1, keyword: "ズ" },
-      q5: { question: "水の化学式は？", options: ["H2O", "CO2", "O2"], correct: 0, keyword: "！" },
+      '1': { question: "蔵王ジャンプ台が建設されたのはいつでしょうか?",
+        options: ["1976年", "1978年", "1980年", "1982年"], correct: 1, keyword: "ツ",
+        hint: "受付で配ったパンフレットを見よう!" },
+      '2': { question: "ジャンプ台の下から上までの標高差と近い高さの建物はどれでしょうか?",
+        options: ["山形市役所", "山形県庁", "上山スカイタワー", "霞城セントラル"], correct: 3, keyword: "ャ",
+        hint: "インフォメーションコーナー横の看板を見てみよう!" },
+      '3': { question: "髙梨沙羅選手が蔵王ジャンプ台で出した最大の飛距離は？",
+        options: ["101.0m", "103.5m", "106.0m", "108.5m"], correct: 2, keyword: "ェ",
+        hint: "ジャンプ台に設置されている看板を見てみよう!" },
+      '4': { question: "ランディングバーンの最大斜度は何度？",
+        options: ["35度", "36.5度", "38度", "39.5度"], correct: 1, keyword: "シ",
+        hint: "受付で配ったパンフレットを見よう!" },
+      '5': { question: "8月のサマージャンプ大会で第2位の内藤智文選手の勤務先は？",
+        options: ["蔵王温泉宿泊施設", "蔵王温泉スキー場", "山形県職員", "山形市職員"], correct: 3, keyword: "ン",
+        hint: "受付テントの新聞コピーを見てみよう!" }
     };
+    const finalAnswer = "シャンツェ";
 
-    function getCollectedKeywordsArray() {
-      let arr = [];
-      Object.keys(quizzes).forEach(id => {
-        const k = localStorage.getItem(`quiz${id}_cleared`);
-        if (k) arr.push(k);
-      });
-      return arr;
-    }
+    const container = document.getElementById("main-container");
+    const counterEl = document.getElementById("retry-counter");
 
-    function renderCollectedKeywordsHTML() {
-      const arr = getCollectedKeywordsArray();
-      if (arr.length === 0) return '<p>まだキーワードは集まっていません。</p>';
-      return arr.map(k => `<span class="keyword">${k.split('').map(ch => `<span class="char">${ch}</span>`).join('')}</span>`).join('');
-    }
-
-    function renderCollectedKeywordsHTML_forBottom() {
-      const arr = getCollectedKeywordsArray();
-      if (arr.length === 0) return '';
-      return `
-        <div class="label">今まで解いた問題のキーワード</div>
-        <div class="keyword">
-          ${arr.map(k => k.split('').map(ch => `<span class="char">${ch}</span>`).join('')).join('')}
-        </div>
-      `;
-    }
-
-    function renderTopPage() {
-      let html = `<div class="quiz-container">
-        <h2>挑戦するクイズを選んでね！</h2>`;
-      Object.keys(quizzes).forEach(id => {
-        html += `<p><a href="#${id}">問題 ${id.replace('q','')}</a></p>`;
-      });
-      html += `</div>`;
-
-      const arr = getCollectedKeywordsArray();
-      if (arr.length === Object.keys(quizzes).length) {
-        html += `<div id="collected-keywords"><h3>おめでとう！全てのキーワードを集めたよ！</h3>${renderCollectedKeywordsHTML()}</div>`;
+    function playSound(id) {
+      const sound = document.getElementById(id);
+      if (sound) {
+        sound.currentTime = 0;
+        sound.play();
       }
-      document.getElementById("content").innerHTML = html;
     }
 
-    function renderQuizPage(id) {
-      const quiz = quizzes[id];
-      if (!quiz) return renderTopPage();
+    // ページを描画する関数
+    function renderPage() {
+      container.innerHTML = '<div id="retry-counter"></div>'; // 初期化
+      const counterEl = document.getElementById("retry-counter");
 
-      let html = `<div class="quiz-container">
-        <h2>${quiz.question}</h2>
-        <div class="options">`;
-      quiz.options.forEach((opt,i) => {
-        html += `<button onclick="checkAnswer(${i}, '${id}')">${opt}</button>`;
-      });
-      html += `</div>
-        <div id="keyword-message"></div>
-        <p><a href="#">← クイズ選択に戻る</a></p>
-      </div>`;
+      let qid = null;
+      if (window.location.hash) {
+        qid = window.location.hash.replace("#q", "");
+      }
 
-      document.getElementById("content").innerHTML = html;
+      if (qid) {
+        const quiz = quizzes[qid];
+        if (!quiz) {
+          container.innerHTML += "<p>クイズが見つかりません。</p>";
+        } else {
+          let html = `<div class="question">${quiz.question}</div>`;
+          html += `<div class="options">`;
+          quiz.options.forEach((opt, i) => {
+            html += `<button onclick="checkAnswer(${i}, '${qid}')">${opt}</button>`;
+          });
+          html += `</div>`;
+          html += `<button onclick="document.getElementById('hint').style.display='block'">💡 ヒントを見る</button>`;
+          html += `<div class="hint" id="hint">${quiz.hint}</div>`;
+          container.innerHTML += html;
+        }
+      } else {
+        let keywords = [];
+        Object.keys(quizzes).forEach(id => {
+          const k = localStorage.getItem(`quiz${id}_cleared`);
+          if (k) keywords.push(k);
+        });
+
+        let html = `<h2>問題が5つのキーワードをはめ込んで答えを導きだそう！</h2>`;
+        if (keywords.length > 0) {
+          // 集めたものだけを順にバラ文字表示
+          html += `<div class="keyword">` +
+            keywords.map(k =>
+              k.split("").map(ch => `<span class="char">${ch}</span>`).join("")
+            ).join("") +
+            `</div>`;
+        } else {
+          html += "<p>まだキーワードを集めていません。</p>";
+        }
+
+        if (keywords.length === Object.keys(quizzes).length) {
+          html += `
+            <div class="hint" style="display:block; margin-top:15px; font-weight:bold;">
+              💡 ヒント: 蔵王ジャンプ台の別名は「アリオンテック蔵王〇〇〇〇〇」
+            </div>
+            <div id="final-step">
+              <input type="text" id="final-answer" placeholder="答えを入力"><br>
+              <button onclick="checkFinalAnswer()">送信</button>
+              <p id="final-result"></p>
+              <div id="survey-link"></div>
+            </div>
+          `;
+        } else {
+          html += `<p style="color:red; font-weight:bold;">⚠️ まだ全てのキーワードを集めていません！</p>`;
+        }
+
+        container.innerHTML += html;
+      }
+       if (qid) {
+        updateCollectedKeywordsBottom(true);   // クイズ画面のときは表示
+      } else {
+        updateCollectedKeywordsBottom(false);  // 最終問題ページのときは非表示
+      }
     }
 
     function checkAnswer(selected, id) {
       const quiz = quizzes[id];
       const buttons = document.querySelectorAll(".options button");
-      const msgBox = document.getElementById("keyword-message");
 
       if (selected === quiz.correct) {
-        // ✅ 正解
-        msgBox.innerHTML = `⭕ 正解！キーワードは <span style="color:red;">『${quiz.keyword}』</span> です`;
-        msgBox.className = "success";
-        msgBox.style.display = "block";
-
+        alert("⭕ 正解！ キーワードは『" + quiz.keyword + "』です");
         localStorage.setItem(`quiz${id}_cleared`, quiz.keyword);
         playSound("correct-sound");
         confetti();
-        updateCollectedKeywordsBottom();
+        // ここを追加（正解したら即座に下部表示を更新）
+      updateCollectedKeywordsBottom();
       } else {
-        // ❌ 不正解
-        msgBox.innerHTML = "❌ 残念！5秒後にもう一度挑戦しよう！";
-        msgBox.className = "fail";
-        msgBox.style.display = "block";
-
+        alert("❌ 残念！5秒後にもう一度挑戦しよう！"); 
         playSound("wrong-sound");
 
-        buttons.forEach(b => b.disabled = true);
-        let countdown = 5;
+        buttons.forEach(btn => {
+          btn.disabled = true;
+          btn.style.opacity = "0.5";
+        });
+
+        let count = 5;
+        counterEl.style.display = "block";
+        counterEl.textContent = `❌ 残念！ ${count}秒後に再挑戦できます`;
+
         const interval = setInterval(() => {
-          countdown--;
-          msgBox.innerHTML = `❌ 残念！ ${countdown}秒後にもう一度挑戦できます`;
-          if (countdown <= 0) {
+          count--;
+          if (count > 0) {
+            counterEl.textContent = `❌ 残念！ ${count}秒後に再挑戦できます`;
+          } else {
             clearInterval(interval);
-            msgBox.style.display = "none";
-            buttons.forEach(b => b.disabled = false);
+            counterEl.style.display = "none";
+            buttons.forEach(btn => {
+              btn.disabled = false;
+              btn.style.opacity = "1";
+            });
           }
         }, 1000);
       }
     }
 
-    function updateCollectedKeywordsBottom(forceShow) {
-      const bottom = document.getElementById("collected-keywords-bottom");
-      bottom.innerHTML = renderCollectedKeywordsHTML_forBottom();
-      if (bottom.innerHTML) bottom.style.display = "block";
-      else bottom.style.display = "none";
-    }
+    function checkFinalAnswer() {
+      const ans = document.getElementById("final-answer").value.trim();
+      const result = document.getElementById("final-result");
+      const survey = document.getElementById("survey-link");
 
-    function playSound(id) {
-      const el = document.getElementById(id);
-      if (el) { el.currentTime = 0; el.play(); }
-    }
-
-    function renderPage() {
-      const qid = location.hash.replace('#','');
-      if (qid && quizzes[qid]) renderQuizPage(qid);
-      else renderTopPage();
-
-      if (qid) {
-        updateCollectedKeywordsBottom(true);
-      } else {
-        let keywords = getCollectedKeywordsArray();
-        if (keywords.length === Object.keys(quizzes).length) {
-          updateCollectedKeywordsBottom(false);
-        } else {
-          updateCollectedKeywordsBottom(true);
-        }
+     if (ans === finalAnswer) {
+  result.innerHTML = "🎉 クリアおめでとう！";
+  result.classList.add("success");
+  playSound("goal-sound");
+  confetti();
+  survey.innerHTML = `
+    <p>
+      <a href="https://forms.gle/mfHe6rbxjTjCdYtG6" target="_blank" class="next-button">次へ ▶</a>
+    </p>
+  `;
+}else {
+        result.innerHTML = "❌ 答えが違うみたいだ…キーワードを見直してみよう！";
+        survey.innerHTML = "";
+        playSound("wrong-sound");
       }
     }
 
-    window.addEventListener("hashchange", renderPage);
+    // ページ読み込み時とハッシュ変更時にレンダリング
     window.addEventListener("load", renderPage);
+    window.addEventListener("hashchange", renderPage);
 
-    // 簡易紙吹雪エフェクト
-    function confetti() {
-      const duration = 1000;
-      const end = Date.now() + duration;
-      (function frame() {
-        const colors = ['#bb0000', '#ffffff', '#0000bb'];
-        const particle = document.createElement('div');
-        particle.style.position = 'fixed';
-        particle.style.width = '8px';
-        particle.style.height = '8px';
-        particle.style.background = colors[Math.floor(Math.random()*colors.length)];
-        particle.style.top = '-10px';
-        particle.style.left = Math.random() * window.innerWidth + 'px';
-        particle.style.opacity = 1;
-        particle.style.pointerEvents = 'none';
-        document.body.appendChild(particle);
+    // --- 追加する JS: collected keywords の取得＆ボトム更新 ---
+function getCollectedKeywordsArray() {
+  const arr = [];
+  Object.keys(quizzes).forEach(id => {
+    const k = localStorage.getItem(`quiz${id}_cleared`);
+    if (k) arr.push(k);
+  });
+  return arr; // 例: ["ツ", "ャ"]
+}
 
-        const fall = setInterval(() => {
-          particle.style.top = (parseFloat(particle.style.top)+5) + 'px';
-          if (parseFloat(particle.style.top) > window.innerHeight) {
-            clearInterval(fall);
-            document.body.removeChild(particle);
-          }
-        }, 16);
+function renderCollectedKeywordsHTML_forBottom() {
+  const arr = getCollectedKeywordsArray();
+  if (arr.length === 0) return '';
+  // 各キーワードを文字ごとに <span class="char"> にして結合（最終問題と同じ見た目）
+  return `<div class="keyword">` +
+    arr.map(k => k.split('').map(ch => `<span class="char">${ch}</span>`).join('')).join('') +
+    `</div>`;
+}
 
-        if (Date.now() < end) requestAnimationFrame(frame);
-      })();
-    }
+function updateCollectedKeywordsBottom(show = true) {
+  const el = document.getElementById('collected-keywords-bottom');
+  if (!el) return;
+
+  if (!show) {
+    el.style.display = 'none';   // 非表示にする
+    return;
+  }
+
+  const html = renderCollectedKeywordsHTML_forBottom();
+  if (html) {
+    el.innerHTML = html;
+    el.style.display = 'block';
+  } else {
+    el.innerHTML = '';
+    el.style.display = 'none';
+  }
+}
+ 
+
+
   </script>
+  <!-- 追加: 画面下部に獲得キーワードを出す領域 -->
+<div id="collected-keywords-bottom" aria-live="polite"></div>
 </body>
 </html>
