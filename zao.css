@@ -28,6 +28,7 @@ body {
 
 .zaolist li {
   margin: 0;
+  list-style: none;
 }
 
 .zaolist a {
