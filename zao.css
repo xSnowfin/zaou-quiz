@@ -6,10 +6,45 @@
       background: url("zaou.JPG") no-repeat center center fixed;
       background-size: cover;
     }
-    nav ul li{
-      display: inline-block;
-      margin: 0 20px;
-    }
+    .zaolist {
+  position: fixed;   /* 上に固定 */
+  top: 0;
+  left: 0;
+  width: 100%;
+  
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px;
+
+  background: rgba(0, 0, 0, 0.6); /* 半透明の黒 */
+  backdrop-filter: blur(6px);     /* ガラスっぽく（対応ブラウザのみ） */
+
+  z-index: 1000;
+}
+
+/* 各ボタンをブロック状に */
+  .zaolist a {
+    text-decoration: none;
+    background: #ffffff;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-weight: bold;
+    color: #333;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    transition: 0.2s;
+  }
+
+  .zaolist a:hover {
+    background: #ffcc00;
+    transform: translateY(-2px);
+  }
+
+  /* アクティブ状態 */
+  .zaolist a.active {
+    background: #ff6600;
+    color: white;
+  }
     h1 { color: #ff6600; text-shadow: 2px 2px #fff; font-size: 2.2em; margin-bottom: 20px; }
     .container { max-width: 600px; margin: auto; background: rgba(255,255,255,0.65); border-radius: 20px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
     .question { font-size: 1.3em; margin: 20px 0; color: #333; }
