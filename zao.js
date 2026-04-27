@@ -1,4 +1,4 @@
- <script>
+
     const quizzes = {
       '1': { question:"蔵王ジャンプ台が建設されたのはいつでしょうか?", options:["1976年","1978年","1980年","1982年"], correct:1, keyword:"ツ", hint:"受付で配ったパンフレットを見よう!" },
       '2': { question:"ジャンプ台の下から上までの標高差と近い高さの建物はどれでしょうか?", options:["山形市役所","山形県庁","上山スカイタワー","霞城セントラル"], correct:3, keyword:"ャ", hint:"インフォメーションコーナー横の看板を見てみよう!" },
@@ -121,4 +121,4 @@
 
     window.addEventListener("load", renderPage);
     window.addEventListener("hashchange", renderPage);
-  </script>
+
