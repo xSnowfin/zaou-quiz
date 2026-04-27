@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
+  <title>蔵王ジャンプ台フェスティバル 謎解きクイズラリー！</title>
+  <link rel="stylesheet" href="zao.css">
+</head>
+<body>
+  <h1>蔵王ジャンプ台フェスティバル 謎解きクイズラリー！</h1>
+    <nav class="zaolist">
+      <ul>
+        <li><a href="https://zaomountainresort.com/">ホームページ</a></li>
+        <li><a href="https://www.kankou.yamagata.yamagata.jp/zao/winter/">info</a></li>
+      </ul>
+    </nav>
+  <div class="container" id="main-container">
+    <div id="keyword-message"></div>
+  </div>
+
+  <!-- 効果音 -->
+  <audio id="correct-sound" src="sounds/correct.mp3" preload="auto"></audio>
+  <audio id="wrong-sound" src="sounds/wrong.mp3" preload="auto"></audio>
+  <audio id="goal-sound" src="sounds/goal.mp3" preload="auto"></audio>
+
+  <!-- 紙吹雪ライブラリ -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script src="zao.js"></script>
+  <!-- 画面下部に獲得キーワードを出す領域 -->
+  <div id="collected-keywords-bottom" aria-live="polite"></div>
+</body>
+</html>
