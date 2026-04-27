@@ -6,19 +6,24 @@
       background: url("zaou.JPG") no-repeat center center fixed;
       background-size: cover;
     }
-    .zaolist {
-  position: fixed;   /* 上に固定 */
-  top: 10;
-  left: 10;
-  
-  display: flex;
-  gap: 10px;
+  .zaolist {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+
+  background: rgba(0,0,0,0.6);
   padding: 10px;
+  border-radius: 10px;
 
-  background: rgba(0, 0, 0, 0.6); /* 半透明の黒 */
-  backdrop-filter: blur(6px);     /* ガラスっぽく（対応ブラウザのみ） */
+  z-index: 9999;
+}
 
-  z-index: 1000;
+.zaolist ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 8px;
 }
 
 /* 各ボタンをブロック状に */
